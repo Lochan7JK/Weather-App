@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Weather App</title>
+        <link href="./images/weather app favicon.png" rel="icon"/>
+        <link href="./style.css" rel="stylesheet"/>
+    </head>
+
+    <body>
+        <div class="card">
+            <div class="search">
+                <!-- The spellcheck attribute, when used on an <input> tag in HTML, controls whether the browser should check the spelling and grammar of the text entered into that input field.  -->
+                 <input type="text" placeholder="Enter your Beautiful City Name" spellcheck="false"/>
+                 <button>
+                    <img src="./images/search.png" alt="search-icon"> 
+                 </button>
+            </div>
+
+            <div class="error">
+                <p>Oops! Looks like you've discovered a lost city! That city must be in Narnia. Try again!</p>
+                <!-- <p>Oops! That city must be in Narnia. Try again!</p> -->
+                <!-- <p>Looks like you've discovered a lost city! Too bad we can't find its weather.</p> -->
+            </div>
+
+
+            <div class="weather">
+                <img src="./images/rain.png" alt="weather-icon" class="weather-icon"/>
+                <h1 class="temperature">2°C</h1>
+                <h2 class="city">Munich</h2>
+
+                <div class="details">
+                    <div class="col">
+                        <img src="./images/humidity.png" alt="humidity-icon"/>
+                        <div>
+                            <p class="humidity">86%</p>
+                            <p>Humidity</p>
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <img src="./images/wind.png" alt="wind-speed-icon"/>
+                        <div>
+                            <p class="wind">10 km/h</p>
+                            <p>Wind Speed</p>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <script>
+
+            // Actual API that we copy pasted first
+            // https://api.openweathermap.org/data/2.5/weather?q=bhopal&appid=5a9d3619f65a13737c1a4f5c83ca7bc3&units=metric
+            
+            const apiKey ="5a9d3619f65a13737c1a4f5c83ca7bc3";
+            const apiUrl = "https://api.openweathermap.org/data/2.5/weather?units=metric&q=";
+            // const apiUrl = "https://api.openweathermap.org/data/2.5/weather?units=metric&q=bhopal"; // FOR A PARTICULAR CITY NAME
+
+
+            const searchBox = document.querySelector(".search input");
+            const searchBtn = document.querySelector(".search button"); 
+            // when this button is clicked, it should send the city info(inside input) in the checkWeather function: Use EventListener
+            const weatherIcon = document.querySelector(".weather-icon");
+
+
+            async function checkWeather(city){
+                const response = await fetch(apiUrl + city + `&appid=${apiKey}`);
+
+                if(response.status == 404){ // if entered city is invalid
+                    // alert("Oops! Looks like you've discovered a lost city! That city must be in Narnia. Try again!");
+                    // OR
+                    document.querySelector(".error").style.display = "block";
+                    document.querySelector(".weather").style.display = "none";
+                } 
+                else{
+                    var data = await response.json(); // this data will have all the information about weather for a particular city
+
+                    // console.log(data); // to display data on console -> expand it to fetch whatever information of weather you want
+
+                    document.querySelector(".city").innerHTML = data.name;
+                    document.querySelector(".temperature").innerHTML = Math.round(data.main.temp) + "°C";
+                    document.querySelector(".humidity").innerHTML = data.main.humidity + "%";
+                    document.querySelector(".wind").innerHTML = data.wind.speed + "km/h";
+
+                    if(data.weather[0].main == "Clouds"){
+                        weatherIcon.src = "./images/clouds.png";
+                    }
+                    else if(data.weather[0].main == "Clear"){
+                        weatherIcon.src = "./images/clear.png";
+                    }
+                    else if(data.weather[0].main == "Rain"){
+                        weatherIcon.src = "./images/rain.png";
+                    }
+                    else if(data.weather[0].main == "Drizzle"){
+                        weatherIcon.src = "./images/drizzle.png";
+                    }
+                    else if(data.weather[0].main == "Mist"){
+                        weatherIcon.src = "./images/mist.png";
+                    }
+                    else if(data.weather[0].main == "Snow"){
+                        weatherIcon.src = "./images/snow.png";
+                    }
+
+                    document.querySelector(".weather").style.display = "block";
+                    document.querySelector(".error").style.display = "none";
+                }
+
+            }
+
+
+            searchBtn.addEventListener("click", function(){
+                //pass dynamic city name (from input field) to pass in checkWeather function
+                checkWeather(searchBox.value); // whenever web page will get loaded function will get called
+            })
+
+        </script>
+
+        <!-- <script src="weather.js" charset="utf-8"></script> -->
+    </body>
+</html>
+
+
+
+<!-- DATA AT CONSOLE: -->
+<!-- {coord: {…}, weather: Array(1), base: 'stations', main: {…}, visibility: 10000, …}base: "stations"clouds: {all: 60}cod: 200coord: {lon: 77.4, lat: 23.2667}dt: 1743160249id: 1275841main: feels_like: 32.41grnd_level: 950humidity: 10pressure: 1006sea_level: 1006temp: 35.09temp_max: 35.09temp_min: 35.09[[Prototype]]: Objectname: "Bhopal"sys: {country: 'IN', sunrise: 1743122799, sunset: 1743167048}timezone: 19800visibility: 10000weather: Array(1)0: {id: 803, main: 'Clouds', description: 'broken clouds', icon: '04d'}length: 1[[Prototype]]: Array(0)wind: deg: 316gust: 5.28speed: 5.5[[Prototype]]: Object[[Prototype]]: Object -->
